@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Пост от {{article.article_date.date()}}
+{% endblock %}
+
+{% block body%}
+<div class = "container fs-3 text-center">
+	<div class="alert alert-info">
+		<h2>{{ article.article_title }}</h2>
+		<p><b>Дата:{{ article.article_date.date() }}</b></p>
+		<p>{{article.article_text}}</p>
+	</div>
+</div>
+{% endblock %}

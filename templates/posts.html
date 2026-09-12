@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Посты сайта
+{% endblock %}
+
+{% block body%}
+<div class = "container fs-3 text-center">
+	{% for el in articles %}
+	<div class="alert alert-info">
+		<h2>{{ el.article_title }}</h2>
+		<p><b>Дата:{{ el.article_date.date() }}</b></p>
+		<a href="/posts/{{ el.article_id }}" class="btn btn-warning">Детальнее</a>
+	</div>
+	{% endfor %}
+</div>
+{% endblock %}
