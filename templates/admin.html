@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Вход в админ панель
+{% endblock %}
+
+{% block body%}
+<div class = "container fs-3 text-center">
+	<form method="post">
+		Логин
+		<input type ="text" name="login" id="login" class="form-control" placeholder="логин"><br>
+		Пароль
+		<textarea type ="text" name="password" id="password" class="form-control" placeholder="пароль"></textarea><br>
+		<input type ="submit" class="btn btn-success" value="отправить"><br>
+	</form>
+</div>
+{% endblock %}

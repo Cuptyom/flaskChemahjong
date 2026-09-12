@@ -1,4 +1,4 @@
-from flask import Flask, render_template, url_for, request, redirect
+from flask import Flask, render_template, url_for, request, redirect, session
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 import os
@@ -6,6 +6,7 @@ import os
 basedir = os.path.abspath(os.path.dirname(__file__))
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'database.db')
+app.config['SECRET_KEY'] = 'secret'
 db = SQLAlchemy(app)
 
 
@@ -16,7 +17,7 @@ class Article(db.Model):
 	article_date = db.Column(db.DateTime, default=datetime.utcnow)
 
 	def __repr__(self):
-		return '<Article %r>' % self.id
+    	return '<Article %r>' % self.article_id
 
 #главная страница
 @app.route('/')
@@ -55,6 +56,23 @@ def create_article():
 def post_detail(article_id):
 	article = Article.query.get(article_id)
 	return render_template('post_detail.html', article=article)
+
+@app.route('/admin', methods=['POST', 'GET'])
+def admin():
+	if request.method == 'POST':
+		session['login'] = request.form['login']
+		session['password'] = request.form['password']
+		return redirect('/test-session')
+	else:
+		return render_template('admin.html')
+
+
+@app.route('/test-session')
+def test_session():
+	if session.get('login') == 'Cuptyom' and session.get('password') == '123':
+		return render_template('test-session.html')
+	else:
+		return render_template('404.html'), 404
 
 
 #ошибка 404
