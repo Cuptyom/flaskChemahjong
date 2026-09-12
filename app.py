@@ -18,18 +18,20 @@ class Article(db.Model):
 	def __repr__(self):
 		return '<Article %r>' % self.id
 
-
+#главная страница
 @app.route('/')
 @app.route('/home')
 def index():
 	return render_template('index.html')
 
-
+#посты
 @app.route('/posts')
 def posts():
 	articles = Article.query.order_by(Article.article_date.desc()).all()
 	return render_template('posts.html', articles=articles)
 
+
+#создание постов
 @app.route('/create-article', methods=['POST', 'GET'])
 def create_article():
 	if request.method == 'POST':
@@ -48,17 +50,14 @@ def create_article():
 		return render_template('create_article.html')
 
 
+#просмотр постов
 @app.route('/posts/<int:article_id>')
 def post_detail(article_id):
 	article = Article.query.get(article_id)
 	return render_template('post_detail.html', article=article)
 
 
-@app.route('/user/<string:user_name>/<int:user_id>')
-def user(user_name, user_id):
-	return f"Hello {user_name}, your id is {user_id}"
-
-
+#ошибка 404
 @app.errorhandler(404)
 def not_found(error):
     return render_template('404.html'), 404
