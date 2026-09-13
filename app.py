@@ -9,16 +9,32 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'da
 app.config['SECRET_KEY'] = '[.cMPq|cZSneIgmOBT8kBQax-}D+Y6!%'
 db = SQLAlchemy(app)
 
+app.config['UPLOAD_FOLDER'] = os.path.join(app.static_folder, 'uploads')
+app.config['MAX_CONTENT_LENGTH'] = 5 * 1024 * 1024   # 5 МБ на запрос
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'webp'}
+
 
 class Article(db.Model):
-	article_id = db.Column(db.Integer, primary_key=True)
-	article_title = db.Column(db.String(100), nullable=False)
-	article_text = db.Column(db.Text, nullable=False)
-	article_date = db.Column(db.DateTime, default=datetime.utcnow)
+    article_id = db.Column(db.Integer, primary_key=True)
+    article_title = db.Column(db.String(100), nullable=False)
+    article_text = db.Column(db.Text, nullable=False)
+    article_date = db.Column(db.DateTime, default=datetime.utcnow)
 
-	def __repr__(self):
-		return '<Article %r>' % self.article_id
+    # связь с картинками (не колонка в БД, а "виртуальное" поле)
+    images = db.relationship('ArticleImage', backref='article', cascade='all, delete-orphan')
 
+    def __repr__(self):
+        return '<Article %r>' % self.article_id
+
+
+class ArticleImage(db.Model):
+    img_id = db.Column(db.Integer, primary_key=True)
+    article_id = db.Column(db.Integer, db.ForeignKey('article.article_id'), nullable=False)
+    img_name = db.Column(db.String(255), nullable=False)
+    img_type = db.Column(db.String(10), nullable=False, default='foreign')
+
+    def __repr__(self):
+        return '<ArticleImage %r>' % self.img_id
 #главная страница
 @app.route('/')
 @app.route('/home')
@@ -61,12 +77,17 @@ def post_detail(article_id):
 	article = Article.query.get(article_id)
 	return render_template('post_detail.html', article=article)
 
+
+#админ вход
 @app.route('/admin', methods=['POST', 'GET'])
 def admin():
 	if request.method == 'POST':
-		session['login'] = request.form['login']
-		session['password'] = request.form['password']
-		return redirect('/test-session')
+		if request.form['login'] == 'Cuptyom' and request.form['password'] == '123':
+			session['login'] = request.form['login']
+			session['password'] = request.form['password']
+			return redirect('/test-session')
+		else:
+			return redirect('/')
 	else:
 		return render_template('admin.html')
 
