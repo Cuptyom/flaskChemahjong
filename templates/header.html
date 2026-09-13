@@ -6,4 +6,9 @@
 <div class="d-flex gap-2">
 	<a class="btn btn-warning" href="/">Главная</a>
 	<a class="btn btn-warning" href="/posts">Посты</a>
+	{% if auth %}
+	<a class="btn btn-warning" href="/admin">Админака</a>
+	<a class="btn btn-warning" href="/create-article">Создать пост</a>
+	<a class="btn btn-warning" href="/main-data-management">Управление основными данными</a>
+	{% endif %}
 </div>

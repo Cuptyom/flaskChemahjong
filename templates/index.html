@@ -9,8 +9,9 @@
 	<div class = "fw-bold">Основная информация</div>
 	<table class="table table-striped table-hover table-bordered">
 		<tr><td>Дата основания</td><td>04.09.2024</td></tr>
-		<tr><td>Текущий сезон</td><td><a class="btn active" target="_blank" href="https://rating.riichimahjong.org/event/875/info">ЧеМаджонг 2026 сезон 5</a></td></tr>
-		<tr><td>Официальная группа Telegram</td><td><a class="btn active" target="_blank" href="https://t.me/+gwFCIt2Nk7ozNDMy">Маджонг Че</a></td></tr>
+		<tr><td>Текущий сезон</td><td><a class="btn active" target="_blank" href="{{ main_data.current_season_link }}">{{ main_data.current_season_name }}</a></td></tr>
+		<tr><td>Официальная группа Telegram</td><td><a class="btn active" target="_blank" href="{{ main_data.current_tg_link }}">{{ main_data.current_tg_name }}</a></td></tr>
 	</table>
 </div>
+
 {% endblock %}

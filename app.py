@@ -4,6 +4,7 @@ from datetime import datetime
 import os
 import uuid
 from werkzeug.utils import secure_filename
+from functools import wraps
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 app = Flask(__name__)
@@ -15,7 +16,7 @@ app.config['UPLOAD_FOLDER'] = os.path.join(app.static_folder, 'uploads')
 app.config['MAX_CONTENT_LENGTH'] = 5 * 1024 * 1024   # 5 МБ на запрос
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'webp'}
 
-
+#------- Таблицы БД -------
 class Article(db.Model):
     article_id = db.Column(db.Integer, primary_key=True)
     article_title = db.Column(db.String(100), nullable=False)
@@ -38,6 +39,31 @@ class ArticleImage(db.Model):
 	def __repr__(self):
 		return '<ArticleImage %r>' % self.img_id
 
+class MainData(db.Model):
+    main_data_id = db.Column(db.Integer, primary_key=True)
+    current_season_name = db.Column(db.String(100), nullable=False)
+    current_season_link = db.Column(db.String(100), nullable=False)
+    current_tg_name = db.Column(db.String(100), nullable=False)
+    current_tg_link = db.Column(db.String(100), nullable=False)
+
+    def __repr__(self):
+        return '<Article %r>' % self.main_data_id
+# --------- вспомогательные функции -------
+@app.context_processor
+def inject_auth():
+    return dict(auth=is_auth())
+
+
+def is_auth():
+    if session['auth'] == True:
+        return True
+    else:
+        return False
+def is_auth_else_return_main():
+    if session['auth'] == True:
+        pass
+    else:
+        return redirect('/')
 
 def save_image(file):
 	original = secure_filename(file.filename)
@@ -50,15 +76,49 @@ def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
+
+def login_required(f):
+    @wraps(f)
+    def wrapper(*args, **kwargs):
+        if session.get('auth') is not True:
+            return render_template('404.html'), 404
+        return f(*args, **kwargs)
+    return wrapper
+
+
+#------обработка страниц -------
+#изменение главной страницы
+@app.route('/main-data-management', methods=['GET', 'POST'])
+@login_required
+def main_data_management():
+    main_data = MainData.query.first()
+    if request.method == 'POST':
+        if main_data is None:
+            main_data = MainData()
+            db.session.add(main_data)
+        main_data.current_season_name = request.form['current_season_name']
+        main_data.current_season_link = request.form['current_season_link']
+        main_data.current_tg_name = request.form['current_tg_name']
+        main_data.current_tg_link = request.form['current_tg_link']
+
+        db.session.commit()
+        return redirect('/')
+    else:
+        main_data = MainData.query.first()
+        return render_template('main_data_management.html', main_data=main_data)
+
+
 #главная страница
 @app.route('/')
 @app.route('/home')
 def index():
-	return render_template('index.html')
+    main_data = MainData.query.first()
+    return render_template('index.html', main_data=main_data)
 
 
 #создание постов
 @app.route('/create-article', methods=['POST', 'GET'])
+@login_required
 def create_article():
     if request.method == 'POST':
         article_title = request.form['article_title']
@@ -114,21 +174,21 @@ def post_detail(article_id):
 #админ вход
 @app.route('/admin', methods=['POST', 'GET'])
 def admin():
-	if request.method == 'POST':
-		if request.form['login'] == 'Cuptyom' and request.form['password'] == '123':
-			session['login'] = request.form['login']
-			session['password'] = request.form['password']
-			return redirect('/test-session')
-		else:
-			return redirect('/')
-	else:
-		return render_template('admin.html')
+    if request.method == 'POST':
+        if request.form['login'] == 'Cuptyom' and request.form['password'] == '123':
+            session['auth'] = True
+            return redirect('/success_auth')
+        else:
+            session['auth'] = False
+            return redirect('/')
+    else:
+        return render_template('admin.html')
 
-
-@app.route('/test-session')
+# успешный вход в паннель
+@app.route('/success_auth')
 def test_session():
-	if session.get('login') == 'Cuptyom' and session.get('password') == '123':
-		return render_template('test-session.html')
+	if is_auth():
+		return render_template('success_auth.html')
 	else:
 		return render_template('404.html'), 404
 

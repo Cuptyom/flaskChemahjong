@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Изменить оснвоные данные
+{% endblock %}
+
+{% block body%}
+<div class = "container fs-3 text-center">
+	<form method="post">
+		Название текущего сезона
+		<input type="text" name="current_season_name" id="current_season_name" class="form-control" value="{{ main_data.current_season_name }}"><br>
+		Ссылка на текущий сезон
+		<input type ="text" name="current_season_link" id="current_season_link" class="form-control" value="{{ main_data.current_season_link }}"><br>
+		Название группы Телеграмм
+		<input type ="text" name="current_tg_name" id="current_tg_name" class="form-control" value="{{ main_data.current_tg_name }}"><br>
+		Ссылка на группу телеграмм
+		<input type ="text" name="current_tg_link" id="current_tg_link" class="form-control" value="{{ main_data.current_tg_link }}"><br>
+    	<input type="submit" class="btn btn-success" value="Изменить"><br>
+	</form>
+</div>
+{% endblock %}
