@@ -2,6 +2,8 @@ from flask import Flask, render_template, url_for, request, redirect, session
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 import os
+import uuid
+from werkzeug.utils import secure_filename
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 app = Flask(__name__)
@@ -28,13 +30,26 @@ class Article(db.Model):
 
 
 class ArticleImage(db.Model):
-    img_id = db.Column(db.Integer, primary_key=True)
-    article_id = db.Column(db.Integer, db.ForeignKey('article.article_id'), nullable=False)
-    img_name = db.Column(db.String(255), nullable=False)
-    img_type = db.Column(db.String(10), nullable=False, default='foreign')
+	img_id = db.Column(db.Integer, primary_key=True)
+	article_id = db.Column(db.Integer, db.ForeignKey('article.article_id'), nullable=False)
+	img_name = db.Column(db.String(255), nullable=False)
+	img_type = db.Column(db.String(10), nullable=False, default='foreign')
 
-    def __repr__(self):
-        return '<ArticleImage %r>' % self.img_id
+	def __repr__(self):
+		return '<ArticleImage %r>' % self.img_id
+
+
+def save_image(file):
+	original = secure_filename(file.filename)
+	ext = original.rsplit('.', 1)[1].lower()
+	unique_name = f"{uuid.uuid4().hex}.{ext}"
+	path = os.path.join(app.config['UPLOAD_FOLDER'], unique_name)
+	file.save(path)
+	return unique_name
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
 #главная страница
 @app.route('/')
 @app.route('/home')
@@ -45,20 +60,38 @@ def index():
 #создание постов
 @app.route('/create-article', methods=['POST', 'GET'])
 def create_article():
-	if request.method == 'POST':
-		article_title = request.form['article_title']
-		article_text = request.form['article_text']
+    if request.method == 'POST':
+        article_title = request.form['article_title']
+        article_text = request.form['article_text']
 
-		article = Article(article_title=article_title, article_text=article_text)
+        article = Article(article_title=article_title, article_text=article_text)
+        db.session.add(article)
+        db.session.flush()   # ← получаем article_id
 
-		try:
-			db.session.add(article)
-			db.session.commit()
-			return redirect('/posts')
-		except:
-			return "произошла ошибка"
-	else:
-		return render_template('create_article.html')
+        # --- главная картинка ---
+        main_file = request.files.get('main_image')
+        if main_file and main_file.filename != '' and allowed_file(main_file.filename):
+            unique_name = save_image(main_file)
+            db.session.add(ArticleImage(
+                article_id=article.article_id,
+                img_name=unique_name,
+                img_type='primary',
+            ))
+
+        # --- дополнительные картинки ---
+        for file in request.files.getlist('secondary_images'):
+            if file and file.filename != '' and allowed_file(file.filename):
+                unique_name = save_image(file)
+                db.session.add(ArticleImage(
+                    article_id=article.article_id,
+                    img_name=unique_name,
+                    img_type='foreign',
+                ))
+
+        db.session.commit()
+        return redirect('/posts')
+    else:
+        return render_template('create_article.html')
 
 
 #посты

@@ -10,6 +10,11 @@
 	<div class="alert alert-info">
 		<h2>{{ el.article_title }}</h2>
 		<p><b>Дата:{{ el.article_date.date() }}</b></p>
+		{% set primary = el.images | selectattr('img_type', 'equalto', 'primary') | first %}
+		{% if primary %}
+		<img src="{{ url_for('static', filename='uploads/' + primary.img_name) }}"
+         class="img-fluid rounded mb-2" style="max-height: 300px;">
+        {% endif %}
 		<a href="/posts/detail/{{ el.article_id }}" class="btn btn-warning">Детальнее</a>
 	</div>
 	{% endfor %}
