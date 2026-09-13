@@ -17,19 +17,13 @@ class Article(db.Model):
 	article_date = db.Column(db.DateTime, default=datetime.utcnow)
 
 	def __repr__(self):
-    	return '<Article %r>' % self.article_id
+		return '<Article %r>' % self.article_id
 
 #главная страница
 @app.route('/')
 @app.route('/home')
 def index():
 	return render_template('index.html')
-
-#посты
-@app.route('/posts')
-def posts():
-	articles = Article.query.order_by(Article.article_date.desc()).all()
-	return render_template('posts.html', articles=articles)
 
 
 #создание постов
@@ -51,8 +45,18 @@ def create_article():
 		return render_template('create_article.html')
 
 
+#посты
+@app.route('/posts')
+@app.route('/posts/<int:page>')
+def posts(page = 1):
+	per_page = 3
+	pagination = Article.query.order_by(Article.article_date.desc()).paginate(page=page, per_page=per_page, error_out = False)
+	articles = pagination.items
+	return render_template('posts.html', articles=articles, pagination=pagination)
+
+
 #просмотр постов
-@app.route('/posts/<int:article_id>')
+@app.route('/posts/detail/<int:article_id>')
 def post_detail(article_id):
 	article = Article.query.get(article_id)
 	return render_template('post_detail.html', article=article)

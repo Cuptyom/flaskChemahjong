@@ -10,8 +10,19 @@
 	<div class="alert alert-info">
 		<h2>{{ el.article_title }}</h2>
 		<p><b>Дата:{{ el.article_date.date() }}</b></p>
-		<a href="/posts/{{ el.article_id }}" class="btn btn-warning">Детальнее</a>
+		<a href="/posts/detail/{{ el.article_id }}" class="btn btn-warning">Детальнее</a>
 	</div>
 	{% endfor %}
+</div>
+<div>
+	<a href="/posts/1" class="btn btn-warning"><<</a>
+	{% if pagination.has_prev == True %}
+	<a href="/posts/{{ pagination.prev_num }}" class="btn btn-warning">{{ pagination.prev_num }}</a>
+	{% endif %}
+	<a href="/posts/{{ pagination.page }}" class="btn btn-warning">{{ pagination.page }}</a>
+	{% if pagination.has_next == True %}
+	<a href="/posts/{{ pagination.next_num }}" class="btn btn-warning">{{ pagination.next_num }}</a>
+	{% endif %}
+	<a href="/posts/{{ pagination.pages }}" class="btn btn-warning">>></a>
 </div>
 {% endblock %}
