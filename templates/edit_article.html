@@ -5,7 +5,7 @@
 {% block body %}
 <div class="container fs-3">
     <form method="post" enctype="multipart/form-data">
-        <div class="alert alert-info">
+        <div class="alert alert-secondary">
             <label for="article_title" class="form-label">Заголовок</label>
             <input type="text" name="article_title" id="article_title"
                    class="form-control" value="{{ article.article_title }}"><br>
@@ -44,7 +44,7 @@
                     </label>
                 </div>
                 {% else %}
-                    <small class="text-muted">Главная (заменяется через загрузку выше)</small>
+                    <small class="text-white">Главная (заменяется через загрузку выше)</small>
                 {% endif %}
             </div>
             {% endfor %}

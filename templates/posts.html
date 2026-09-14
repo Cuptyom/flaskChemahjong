@@ -33,7 +33,7 @@
 		{% if pagination.has_prev == True %}
 		<a href="/posts/{{ pagination.prev_num }}" class="btn btn-warning">{{ pagination.prev_num }}</a>
 		{% endif %}
-		<a href="/posts/{{ pagination.page }}" class="btn active">{{ pagination.page }}</a>
+		<a href="/posts/{{ pagination.page }}" class="btn bg-white">{{ pagination.page }}</a>
 		{% if pagination.has_next == True %}
 		<a href="/posts/{{ pagination.next_num }}" class="btn btn-warning">{{ pagination.next_num }}</a>
 		{% endif %}
