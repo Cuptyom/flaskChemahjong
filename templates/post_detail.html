@@ -5,14 +5,14 @@
 {% endblock %}
 
 {% block body%}
-<div class = "container fs-3 text-center">
-	<div class="alert alert-info">
+<div class = "container fs-3">
+	<div class="alert text-white">
 		<h2>{{ article.article_title }}</h2>
 		<p><b>Дата:{{ article.article_date.date() }}</b></p>
 		<p>{{article.article_text}}</p>
 	</div>
 	{% if article.images %}
-	<h3>Фото</h3>
+	<h3 class="text-white">Фото</h3>
 	<div class="row">
 	    {% for img in article.images %}
 	    <div class="col-md-4 mb-3">

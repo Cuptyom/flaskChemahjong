@@ -18,9 +18,9 @@
 			<img src="{{ url_for('static', filename='uploads/' + primary.img_name) }}"
 	         class="img-fluid rounded mb-2 rounded-0" style="max-height: 300px;"><br>
 	        {% endif %}
-			<a href="/posts/detail/{{ el.article_id }}" class="btn btn-warning">Детальнее</a>
+			<a href="/posts/detail/{{ el.article_id }}" class="btn btn-outline-dark">Детальнее</a>
 			{% if auth %}
-				<a href="/edit-article/{{ el.article_id }}" class="btn btn-warning">Изменить</a>
+				<a href="/edit-article/{{ el.article_id }}" class="btn btn-outline-dark">Изменить</a>
 			{% endif %}
 		</div>
 		{% endfor %}
@@ -29,15 +29,15 @@
 <div>
 	{% if articles %}
 	<div class = "container fs-3 text-center" >
-		<a href="/posts/1" class="btn btn-warning"><<</a>
+		<a href="/posts/1" class="btn btn-light"><<</a>
 		{% if pagination.has_prev == True %}
-		<a href="/posts/{{ pagination.prev_num }}" class="btn btn-warning">{{ pagination.prev_num }}</a>
+		<a href="/posts/{{ pagination.prev_num }}" class="btn btn-light">{{ pagination.prev_num }}</a>
 		{% endif %}
-		<a href="/posts/{{ pagination.page }}" class="btn bg-white">{{ pagination.page }}</a>
+		<a href="/posts/{{ pagination.page }}" class="btn btn-outline-light">{{ pagination.page }}</a>
 		{% if pagination.has_next == True %}
-		<a href="/posts/{{ pagination.next_num }}" class="btn btn-warning">{{ pagination.next_num }}</a>
+		<a href="/posts/{{ pagination.next_num }}" class="btn btn-light">{{ pagination.next_num }}</a>
 		{% endif %}
-		<a href="/posts/{{ pagination.pages }}" class="btn btn-warning">>></a>
+		<a href="/posts/{{ pagination.pages }}" class="btn btn-light">>></a>
 	</div>
 	{% endif %}
 </div>
