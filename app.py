@@ -154,6 +154,60 @@ def create_article():
         return render_template('create_article.html')
 
 
+#редактирование постов
+@app.route('/edit-article/<int:article_id>', methods=['POST', 'GET'])
+@login_required
+def edit_article(article_id):
+    article = Article.query.get_or_404(article_id)
+
+    if request.method == 'POST':
+        # 1. текст
+        article.article_title = request.form['article_title']
+        article.article_text = request.form['article_text']
+
+        # 2. замена главной
+        main_file = request.files.get('main_image')
+        if main_file and main_file.filename != '' and allowed_file(main_file.filename):
+            old_primary = ArticleImage.query.filter_by(
+                article_id=article_id, img_type='primary'
+            ).first()
+            if old_primary:
+                old_path = os.path.join(app.config['UPLOAD_FOLDER'], old_primary.img_name)
+                if os.path.exists(old_path):
+                    os.remove(old_path)
+                db.session.delete(old_primary)
+
+            unique_name = save_image(main_file)
+            db.session.add(ArticleImage(
+                article_id=article_id,
+                img_name=unique_name,
+                img_type='primary',
+            ))
+
+        # 3. удаление отмеченных
+        for img_id in request.form.getlist('delete_images'):
+            img = ArticleImage.query.get(int(img_id))
+            if img and img.article_id == article_id:
+                path = os.path.join(app.config['UPLOAD_FOLDER'], img.img_name)
+                if os.path.exists(path):
+                    os.remove(path)
+                db.session.delete(img)
+
+        # 4. добавление новых  ← ЭТОГО У ТЕБЯ НЕТ
+        for file in request.files.getlist('secondary_images'):
+            if file and file.filename != '' and allowed_file(file.filename):
+                unique_name = save_image(file)
+                db.session.add(ArticleImage(
+                    article_id=article_id,
+                    img_name=unique_name,
+                    img_type='foreign',
+                ))
+
+        db.session.commit()
+        return redirect(url_for('post_detail', article_id=article_id))
+
+    return render_template('edit_article.html', article=article)
+
 #посты
 @app.route('/posts')
 @app.route('/posts/<int:page>')

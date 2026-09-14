@@ -22,5 +22,8 @@
 	    {% endfor %}
 	</div>
 	{% endif %}
+	{% if auth %}
+		<a href="/edit-article/{{ article.article_id }}" class="btn btn-warning">Изменить</a>
+	{% endif %}
 </div>
 {% endblock %}

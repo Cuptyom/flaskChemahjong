@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+
+{% block title %}Изменить пост от {{ article.article_date.date() }}{% endblock %}
+
+{% block body %}
+<div class="container fs-3">
+    <form method="post" enctype="multipart/form-data">
+        <div class="alert alert-info">
+            <label for="article_title" class="form-label">Заголовок</label>
+            <input type="text" name="article_title" id="article_title"
+                   class="form-control" value="{{ article.article_title }}"><br>
+
+            <label class="form-label">Главное фото</label><br>
+            {% set primary = article.images | selectattr('img_type', 'equalto', 'primary') | first %}
+            {% if primary %}
+                <img src="{{ url_for('static', filename='uploads/' + primary.img_name) }}"
+                     class="img-fluid rounded mb-2" style="max-height: 300px;"><br>
+                <small class="text-muted">Загрузите новое, чтобы заменить</small><br>
+            {% endif %}
+            <input type="file" name="main_image" id="main_image"
+                   class="form-control" accept="image/*"><br>
+
+            <p><b>Дата: {{ article.article_date.date() }} (неизменяема)</b></p>
+
+            <label for="article_text" class="form-label">Текст</label>
+            <textarea name="article_text" id="article_text"
+                      class="form-control" rows="8">{{ article.article_text }}</textarea>
+        </div>
+
+        {% if article.images %}
+        <h3>Все фото</h3>
+        <div class="row">
+            {% for img in article.images %}
+            <div class="col-md-4 mb-3">
+                <img src="{{ url_for('static', filename='uploads/' + img.img_name) }}"
+                     class="img-fluid rounded" alt="Фото">
+                {% if img.img_type != 'primary' %}
+                <div class="form-check mt-2">
+                    <input class="form-check-input" type="checkbox"
+                           name="delete_images" value="{{ img.img_id }}"
+                           id="del_{{ img.img_id }}">
+                    <label class="form-check-label text-danger" for="del_{{ img.img_id }}">
+                        Удалить
+                    </label>
+                </div>
+                {% else %}
+                    <small class="text-muted">Главная (заменяется через загрузку выше)</small>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <label for="secondary_images" class="form-label">Добавить фото</label>
+        <input type="file" name="secondary_images" id="secondary_images"
+               class="form-control" multiple accept="image/*"><br>
+
+        <button type="submit" class="btn btn-success">Сохранить</button>
+        <a href="{{ url_for('post_detail', article_id=article.article_id) }}"
+           class="btn btn-secondary">Отмена</a>
+    </form>
+</div>
+{% endblock %}
