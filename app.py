@@ -55,9 +55,12 @@ def inject_auth():
 
 
 def is_auth():
-    if session['auth'] == True:
-        return True
-    else:
+    try:
+        if session['auth'] == True:
+            return True
+        else:
+            return False
+    except:
         return False
 def is_auth_else_return_main():
     if session['auth'] == True:
