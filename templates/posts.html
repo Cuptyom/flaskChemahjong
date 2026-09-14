@@ -5,18 +5,18 @@
 {% endblock %}
 
 {% block body%}
-<div class = "container fs-3 text-center">
+<div class = "container fs-3 text-center w-50">
 	{% if not articles %}
 	<div class="alert alert-secondary">Постов пока что нет!</div>
 	{% else %}
 		{% for el in articles %}
-		<div class="alert alert-info">
+		<div class="alert alert-secondary rounded-0">
 			<h2>{{ el.article_title }}</h2>
 			<p><b>Дата:{{ el.article_date.date() }}</b></p>
 			{% set primary = el.images | selectattr('img_type', 'equalto', 'primary') | first %}
 			{% if primary %}
 			<img src="{{ url_for('static', filename='uploads/' + primary.img_name) }}"
-	         class="img-fluid rounded mb-2" style="max-height: 300px;"><br>
+	         class="img-fluid rounded mb-2 rounded-0" style="max-height: 300px;"><br>
 	        {% endif %}
 			<a href="/posts/detail/{{ el.article_id }}" class="btn btn-warning">Детальнее</a>
 			{% if auth %}
@@ -33,7 +33,7 @@
 		{% if pagination.has_prev == True %}
 		<a href="/posts/{{ pagination.prev_num }}" class="btn btn-warning">{{ pagination.prev_num }}</a>
 		{% endif %}
-		<a href="/posts/{{ pagination.page }}" class="btn btn-warning">{{ pagination.page }}</a>
+		<a href="/posts/{{ pagination.page }}" class="btn active">{{ pagination.page }}</a>
 		{% if pagination.has_next == True %}
 		<a href="/posts/{{ pagination.next_num }}" class="btn btn-warning">{{ pagination.next_num }}</a>
 		{% endif %}

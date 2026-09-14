@@ -5,12 +5,21 @@
 {% endblock %}
 
 {% block body%}
-<div class = "container fs-3 text-center">
+<div class = "container fs-3 text-center w-50">
 	<div class = "fw-bold">Основная информация</div>
 	<table class="table table-striped table-hover table-bordered">
-		<tr><td>Дата основания</td><td>04.09.2024</td></tr>
-		<tr><td>Текущий сезон</td><td><a class="btn active" target="_blank" href="{{ main_data.current_season_link }}">{{ main_data.current_season_name }}</a></td></tr>
-		<tr><td>Официальная группа Telegram</td><td><a class="btn active" target="_blank" href="{{ main_data.current_tg_link }}">{{ main_data.current_tg_name }}</a></td></tr>
+		<tr>
+			<td>Дата основания</td>
+			<td>04.09.2024</td>
+		</tr>
+		<tr>
+			<td>Текущий сезон</td>
+			<td><a class="btn active" target="_blank" href="{{ main_data.current_season_link }}">{{ main_data.current_season_name | default('нет данных', true) }}</a></td>
+		</tr>
+		<tr>
+			<td>Официальная группа Telegram</td>
+			<td><a class="btn active" target="_blank" href="{{ main_data.current_tg_link }}">{{ main_data.current_tg_name | default('нет данных', true) }}</a></td>
+		</tr>
 	</table>
 </div>
 
