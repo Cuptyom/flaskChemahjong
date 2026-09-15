@@ -279,7 +279,7 @@ def post_detail(article_id):
 
 
 #админ вход
-@app.route('/admin', methods=['POST', 'GET'])
+@app.route(f'/{Admin.admin_pannel_url}', methods=['POST', 'GET'])
 def admin():
     if request.method == 'POST':
         if request.form['login'] == Admin.login and request.form['password'] == Admin.password:
