@@ -1,22 +1,56 @@
 {% extends 'base.html' %}
 
-{% block title %}
-Создать статью
-{% endblock %}
+{% block title %}Создать статью{% endblock %}
 
-{% block body%}
-<div class = "container fs-3 text-center w-50">
-	<form method="post" enctype="multipart/form-data">
-		Заголовок статьи
-		<input type ="text" name="article_title" id="article_title" class="form-control" placeholder="Заголовок"><br>
-		Главное фото
-		<input type="file" name="main_image" id="main_image" class="form-control" accept="image/png,image/jpeg,image/gif,image/webp"><br>
-		Текст статьи
-		<textarea type ="text" name="article_text" id="article_text" class="form-control" placeholder="Текст"></textarea><br>
+{% block body %}
+<div class="container" style="max-width: 720px;">
+    <h1 class="text-center my-4">Новая статья</h1>
 
-		Дополнительные фото
-    	<input type="file" name="secondary_images" id="secondary_images" class="form-control" multiple accept="image/png,image/jpeg,image/gif,image/webp"><br>
-    	<input type="submit" class="btn btn-success" value="отправить"><br>
-	</form>
+    <form method="post" enctype="multipart/form-data">
+        <div class="card shadow-sm">
+            <div class="card-body">
+
+                <div class="mb-3">
+                    <label for="article_title" class="form-label">Заголовок статьи</label>
+                    <input type="text" name="article_title" id="article_title"
+                           class="form-control" placeholder="Например: Итоги сезона 2026"
+                           required>
+                </div>
+
+                <div class="mb-3">
+                    <label for="article_text" class="form-label">Текст статьи</label>
+                    <textarea name="article_text" id="article_text"
+                              class="form-control" rows="8"
+                              placeholder="Введите текст статьи..." required></textarea>
+                </div>
+
+                <hr class="my-4">
+
+                <div class="mb-3">
+                    <label for="main_image" class="form-label">Главное фото</label>
+                    <input type="file" name="main_image" id="main_image"
+                           class="form-control" accept="image/*">
+                    <div class="form-text">
+                        Показывается на странице постов. Одна картинка.
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="secondary_images" class="form-label">Дополнительные фото</label>
+                    <input type="file" name="secondary_images" id="secondary_images"
+                           class="form-control" accept="image/*" multiple>
+                    <div class="form-text">
+                        Показываются только на странице поста. Можно несколько.
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="text-center my-4">
+            <button type="submit" class="btn btn-success px-4">Опубликовать</button>
+            <a href="{{ url_for('posts') }}" class="btn btn-secondary">Отмена</a>
+        </div>
+    </form>
 </div>
 {% endblock %}
