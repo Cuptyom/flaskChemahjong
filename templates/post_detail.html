@@ -1,29 +1,74 @@
 {% extends 'base.html' %}
 
 {% block title %}
-Пост от {{article.article_date.date()}}
+Пост от {{ article.article_date.date() }}
 {% endblock %}
 
-{% block body%}
-<div class = "container fs-3">
-	<div class="alert text-white">
-		<h2>{{ article.article_title }}</h2>
-		<p><b>Дата:{{ article.article_date.date() }}</b></p>
-		<p>{{article.article_text}}</p>
-	</div>
-	{% if article.images %}
-	<h3 class="text-white">Фото</h3>
-	<div class="row">
-	    {% for img in article.images %}
-	    <div class="col-md-4 mb-3">
-	        <img src="{{ url_for('static', filename='uploads/' + img.img_name) }}"
-	             class="img-fluid rounded" alt="Фото">
-	    </div>
-	    {% endfor %}
-	</div>
-	{% endif %}
-	{% if auth %}
-		<a href="/edit-article/{{ article.article_id }}" class="btn btn-outline-light">Изменить</a>
-	{% endif %}
+{% block body %}
+<div class="container fs-3">
+  <a href="{{ url_for('posts') }}" class="btn btn-outline-light">К постам</a>
+
+  <div class="alert text-white">
+    <h2>{{ article.article_title }}</h2>
+    <p><b>Дата: {{ article.article_date.date() }}</b></p>
+    <p>{{ article.article_text }}</p>
+  </div>
+
+  {% if article.images %}
+    <h3 class="text-white">Фото</h3>
+    <div class="row">
+      {% for img in article.images %}
+        <div class="col-md-4 mb-3">
+          <img
+            src="{{ url_for('static', filename='uploads/' + img.img_name) }}"
+            class="card-img-top post-thumb"
+            style="height: 200px; object-fit: cover; cursor: zoom-in;"
+            data-bs-toggle="modal"
+            data-bs-target="#imageModal"
+            data-img-src="{{ url_for('static', filename='uploads/' + img.img_name) }}"
+            alt="Фото поста">
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  {% if auth %}
+    <a href="/edit-article/{{ article.article_id }}" class="btn btn-outline-light">Изменить</a>
+  {% endif %}
 </div>
+
+<!-- Модальное окно для просмотра изображения -->
+<div class="modal fade" id="imageModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-fullscreen">
+    <div class="modal-content bg-transparent border-0">
+      <button
+        type="button"
+        class="btn-close btn-close-white position-absolute top-0 end-0 m-3"
+        style="z-index: 1055;"
+        data-bs-dismiss="modal"
+        aria-label="Закрыть"></button>
+      <div class="modal-body d-flex align-items-center justify-content-center p-0">
+        <img id="modalImage" src="" alt="Просмотр"
+             style="max-width: 80%%; max-height: 80vh; object-fit: contain;">
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // При открытии модалки подставляем src из data-атрибута кликнутой картинки
+  const imageModal = document.getElementById('imageModal');
+  if (imageModal) {
+    imageModal.addEventListener('show.bs.modal', function (event) {
+      const trigger = event.relatedTarget;
+      const imgSrc = trigger.getAttribute('data-img-src');
+      document.getElementById('modalImage').src = imgSrc;
+    });
+
+    // Очищаем src при закрытии, чтобы не мигало старое изображение
+    imageModal.addEventListener('hidden.bs.modal', function () {
+      document.getElementById('modalImage').src = '';
+    });
+  }
+</script>
 {% endblock %}

@@ -22,3 +22,102 @@
     transform: translateY(-5px) scale(1.02);
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
 }
+
+  :root {
+    --sc-orange: #ff5500;
+    --sc-orange-hover: #ff7700;
+    --sc-bg: #111111;
+    --sc-card: #1a1a1a;
+    --sc-border: #2a2a2a;
+    --sc-text: #ffffff;
+    --sc-text-muted: #999999;
+  }
+
+  body {
+    background-color: var(--sc-bg);
+    color: var(--sc-text);
+    font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif;
+  }
+
+  .sc-header {
+    padding: 60px 0 40px;
+    text-align: center;
+    border-bottom: 1px solid var(--sc-border);
+  }
+
+  .sc-header h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    margin-bottom: 8px;
+  }
+
+  .sc-header p {
+    color: var(--sc-text-muted);
+    font-size: 1rem;
+    margin: 0;
+  }
+
+  .sc-card {
+    background-color: var(--sc-card);
+    border: 1px solid var(--sc-border);
+    border-radius: 12px;
+    padding: 32px;
+    margin-top: 40px;
+  }
+
+  .sc-card-title {
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--sc-text-muted);
+    font-weight: 600;
+    margin-bottom: 24px;
+  }
+
+  .sc-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 0;
+    border-bottom: 1px solid var(--sc-border);
+  }
+
+  .sc-row:last-child {
+    border-bottom: none;
+  }
+
+  .sc-label {
+    color: var(--sc-text-muted);
+    font-size: 0.95rem;
+  }
+
+  .sc-value {
+    font-weight: 500;
+    font-size: 1rem;
+    color: var(--sc-text);
+  }
+
+  .sc-btn {
+    display: inline-block;
+    background-color: var(--sc-orange);
+    color: #fff !important;
+    text-decoration: none !important;
+    padding: 8px 20px;
+    border-radius: 24px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+    border: none;
+  }
+
+  .sc-btn:hover {
+    background-color: var(--sc-orange-hover);
+    transform: translateY(-1px);
+  }
+
+  .sc-btn.disabled {
+    background-color: #333;
+    color: #777 !important;
+    cursor: not-allowed;
+  }

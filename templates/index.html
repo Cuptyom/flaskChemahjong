@@ -1,26 +1,48 @@
 {% extends 'base.html' %}
 
 {% block title %}
-ЧеМаджонг главная
+ЧеМаджонг — главная
 {% endblock %}
 
-{% block body%}
-<div class = "container fs-3 text-center" style="width: 66%">
-	<div class = "fw-bold">Основная информация</div>
-	<table class="table table-striped table-hover table-bordered">
-		<tr>
-			<td>Дата основания</td>
-			<td>04.09.2024</td>
-		</tr>
-		<tr>
-			<td>Текущий сезон</td>
-			<td><a class="btn active" target="_blank" href="{{ main_data.current_season_link }}">{{ main_data.current_season_name | default('нет данных', true) }}</a></td>
-		</tr>
-		<tr>
-			<td>Официальная группа Telegram</td>
-			<td><a class="btn active" target="_blank" href="{{ main_data.current_tg_link }}">{{ main_data.current_tg_name | default('нет данных', true) }}</a></td>
-		</tr>
-	</table>
-</div>
+{% block body %}
 
+<div class="container" style="max-width: 720px;">
+
+  <div class="sc-header">
+    <h1>ЧеМаджонг</h1>
+    <p>Череповецкий клуб риичи маджонга</p>
+  </div>
+
+  <div class="sc-card">
+    <div class="sc-card-title">Основная информация</div>
+
+    <div class="sc-row">
+      <span class="sc-label">Дата основания</span>
+      <span class="sc-value">04.09.2024</span>
+    </div>
+
+    <div class="sc-row">
+      <span class="sc-label">Текущий сезон</span>
+      {% if main_data.current_season_link %}
+        <a class="sc-btn" target="_blank" href="{{ main_data.current_season_link }}">
+          {{ main_data.current_season_name | default('нет данных', true) }}
+        </a>
+      {% else %}
+        <span class="sc-btn disabled">нет данных</span>
+      {% endif %}
+    </div>
+
+    <div class="sc-row">
+      <span class="sc-label">Официальная группа Telegram</span>
+      {% if main_data.current_tg_link %}
+        <a class="sc-btn" target="_blank" href="{{ main_data.current_tg_link }}">
+          {{ main_data.current_tg_name | default('нет данных', true) }}
+        </a>
+      {% else %}
+        <span class="sc-btn disabled">нет данных</span>
+      {% endif %}
+    </div>
+  </div>
+
+</div>
 {% endblock %}

@@ -32,9 +32,9 @@
         <h3>Все фото</h3>
         <div class="row">
             {% for img in article.images %}
-            <div class="col-md-4 mb-3">
+            <div class="col-md-4 mb-3 post-card">
                 <img src="{{ url_for('static', filename='uploads/' + img.img_name) }}"
-                     class="img-fluid rounded" alt="Фото">
+                 class="card-img-top" style="height: 200px; object-fit: cover;">
                 {% if img.img_type != 'primary' %}
                 <div class="form-check mt-2">
                     <input class="form-check-input" type="checkbox"
