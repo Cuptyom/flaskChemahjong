@@ -1,44 +1,69 @@
 {% extends 'base.html' %}
 
-{% block title %}
-Посты сайта
-{% endblock %}
+{% block title %}Посты сайта{% endblock %}
 
-{% block body%}
-<div class = "container fs-3 text-center w-50">
-	{% if not articles %}
-	<div class="alert alert-secondary">Постов пока что нет!</div>
-	{% else %}
-		{% for el in articles %}
-		<div class="alert alert-secondary rounded-3">
-			<h2>{{ el.article_title }}</h2>
-			<p><b>Дата:{{ el.article_date.date() }}</b></p>
-			{% set primary = el.images | selectattr('img_type', 'equalto', 'primary') | first %}
-			{% if primary %}
-			<img src="{{ url_for('static', filename='uploads/' + primary.img_name) }}"
-	         class="img-fluid rounded mb-2 rounded-0" style="max-height: 300px;"><br>
-	        {% endif %}
-			<a href="/posts/detail/{{ el.article_id }}" class="btn btn-outline-dark">Детальнее</a>
-			{% if auth %}
-				<a href="/edit-article/{{ el.article_id }}" class="btn btn-outline-dark">Изменить</a>
-			{% endif %}
-		</div>
-		{% endfor %}
-	{% endif %}
+{% block body %}
+<div class="container">
+    {% if not articles %}
+        <div class="alert alert-secondary">Постов пока что нет!</div>
+    {% else %}
+        <div class="row row-cols-1 row-cols-md-4 g-4 justify-content-center mx-auto"
+             style="max-width: 1000px;">
+            {% for el in articles %}
+            <div>
+                <div class="card h-100 shadow-sm post-card">
+                    {% set primary = el.images | selectattr('img_type', 'equalto', 'primary') | first %}
+                    {% if primary %}
+                        <img src="{{ url_for('static', filename='uploads/' + primary.img_name) }}"
+                             class="card-img-top" style="height: 200px; object-fit: cover;"
+                             alt="{{ el.article_title }}">
+                    {% else %}
+                        <img src="{{ url_for('static', filename='img/logo.jpg') }}"
+                             class="card-img-top" style="height: 200px; object-fit: cover;"
+                             alt="{{ el.article_title }}">
+                    {% endif %}
+
+                    <div class="card-body d-flex flex-column">
+                    	{% if el.article_title | length > 30 %}
+						    <h4 class="card-title">{{ el.article_title[:29] }}...</h4>
+						{% else %}
+						    <h4 class="card-title">{{ el.article_title }}</h4>
+						{% endif %}
+                        <p class="card-text text-muted small">
+                            <b>Дата:</b> {{ el.article_date.date() }}
+                        </p>
+
+                        <div class="mt-auto d-flex gap-2">
+                            <a href="{{ url_for('post_detail', article_id=el.article_id) }}"
+                               class="btn btn-outline-dark btn-sm">Детальнее</a>
+                            {% if auth %}
+                                <a href="{{ url_for('edit_article', article_id=el.article_id) }}"
+                                   class="btn btn-outline-dark btn-sm">Изменить</a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    {% endif %}
 </div>
-<div>
-	{% if articles %}
-	<div class = "container fs-3 text-center" >
-		<a href="/posts/1" class="btn btn-light"><<</a>
-		{% if pagination.has_prev == True %}
-		<a href="/posts/{{ pagination.prev_num }}" class="btn btn-light">{{ pagination.prev_num }}</a>
-		{% endif %}
-		<a href="/posts/{{ pagination.page }}" class="btn btn-outline-light">{{ pagination.page }}</a>
-		{% if pagination.has_next == True %}
-		<a href="/posts/{{ pagination.next_num }}" class="btn btn-light">{{ pagination.next_num }}</a>
-		{% endif %}
-		<a href="/posts/{{ pagination.pages }}" class="btn btn-light">>></a>
-	</div>
-	{% endif %}
+
+{% if articles %}
+<div class="container text-center my-4">
+    <a href="{{ url_for('posts', page=1) }}" class="btn btn-light">&laquo;</a>
+
+    {% if pagination.has_prev %}
+        <a href="{{ url_for('posts', page=pagination.prev_num) }}" class="btn btn-light">{{ pagination.prev_num }}</a>
+    {% endif %}
+
+    <a href="{{ url_for('posts', page=pagination.page) }}" class="btn btn-outline-light active">{{ pagination.page }}</a>
+
+    {% if pagination.has_next %}
+        <a href="{{ url_for('posts', page=pagination.next_num) }}" class="btn btn-light">{{ pagination.next_num }}</a>
+    {% endif %}
+
+    <a href="{{ url_for('posts', page=pagination.pages) }}" class="btn btn-light">&raquo;</a>
 </div>
+{% endif %}
 {% endblock %}

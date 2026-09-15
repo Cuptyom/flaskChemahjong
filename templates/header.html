@@ -2,11 +2,13 @@
     <div class="container-fluid">
         <div class="d-flex align-items-center justify-content-between py-2 flex-wrap gap-3">
             <!-- Брендон: лого + название -->
-            <div class="d-flex align-items-center gap-2">
-                <img src="{{ url_for('static', filename='img/logo.jpg') }}"
-                     class="rounded" style="height: 40px;" alt="Логотип">
-                <span class="fw-bold fs-5 text-white">Череповецкий клуб риичи маджонга</span>
-            </div>
+            <a href="/" class="text-decoration-none text-white">
+	            <div class="d-flex align-items-center gap-2">
+	                <img src="{{ url_for('static', filename='img/logo.jpg') }}"
+	                     class="rounded" style="height: 32px;" alt="Логотип">
+	                <span class="fw-bold fs-6 text-white">Череповецкий клуб риичи маджонга</span>
+	            </div>
+            </a>
 
             <!-- Меню -->
             <div class="d-flex align-items-center gap-3 flex-wrap">

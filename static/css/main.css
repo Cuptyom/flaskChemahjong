@@ -13,3 +13,12 @@
 .nav-link-custom.active {
     border-bottom-color: #ffc107;   /* текущая страница тоже подсвечена */
 }
+.post-card {
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    cursor: pointer;
+}
+
+.post-card:hover {
+    transform: translateY(-5px) scale(1.02);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+}

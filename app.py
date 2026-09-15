@@ -235,7 +235,7 @@ def delete_article(article_id):
 @app.route('/posts')
 @app.route('/posts/<int:page>')
 def posts(page = 1):
-	per_page = 3
+	per_page = 8
 	pagination = Article.query.order_by(Article.article_date.desc()).paginate(page=page, per_page=per_page, error_out = False)
 	articles = pagination.items
 	return render_template('posts.html', articles=articles, pagination=pagination)
