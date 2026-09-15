@@ -100,8 +100,8 @@
 
   .sc-btn {
     display: inline-block;
-    background-color: var(--sc-orange);
-    color: #fff !important;
+    background-color: white;
+    color: #000 !important;
     text-decoration: none !important;
     padding: 8px 20px;
     border-radius: 24px;
@@ -112,7 +112,6 @@
   }
 
   .sc-btn:hover {
-    background-color: var(--sc-orange-hover);
     transform: translateY(-1px);
   }
 

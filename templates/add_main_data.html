@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+
+{% block title %}Изменить основные данные{% endblock %}
+
+{% block body %}
+<div class="container" style="max-width: 720px;">
+    <h1 class="text-center my-4">Основные данные</h1>
+
+    <form method="post">
+        <div class="card mb-3 shadow-sm">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span class="fw-bold">Добавление</span>
+
+                <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox"
+                           name="is_link_new">
+                    <label class="form-check-label">
+                        Это ссылка
+                    </label>
+                </div>
+            </div>
+
+            <div class="card-body">
+                <div class="mb-3">
+                    <label class="form-label">
+                        Название
+                    </label>
+                    <input type="text" class="form-control"
+                           name="data_name_new">
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">
+                        Значение
+                    </label>
+                    <input type="text" class="form-control"
+                           name="data_value_new">
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">
+                        Ссылка
+                    </label>
+                    <input type="text" class="form-control"
+                           name="data_link_new"
+                           placeholder="https://...">
+                    <div class="form-text">
+                        Заполняется только если «Это ссылка» включено.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-center mb-5">
+            <a href="{{ url_for('main_data_management') }}" class="btn btn-success">Изменить</a>
+            <button type="submit" class="btn btn-success px-4">Сохранить</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

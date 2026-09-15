@@ -1,21 +1,95 @@
 {% extends 'base.html' %}
 
-{% block title %}
-Изменить оснвоные данные
-{% endblock %}
+{% block title %}Изменить основные данные{% endblock %}
 
-{% block body%}
-<div class = "container fs-3 text-center w-50">
-	<form method="post">
-		Название текущего сезона
-		<input type="text" name="current_season_name" id="current_season_name" class="form-control" value="{{ main_data.current_season_name }}"><br>
-		Ссылка на текущий сезон
-		<input type ="text" name="current_season_link" id="current_season_link" class="form-control" value="{{ main_data.current_season_link }}"><br>
-		Название группы Телеграмм
-		<input type ="text" name="current_tg_name" id="current_tg_name" class="form-control" value="{{ main_data.current_tg_name }}"><br>
-		Ссылка на группу телеграмм
-		<input type ="text" name="current_tg_link" id="current_tg_link" class="form-control" value="{{ main_data.current_tg_link }}"><br>
-    	<input type="submit" class="btn btn-success" value="Изменить"><br>
-	</form>
+{% block body %}
+<div class="container" style="max-width: 720px;">
+    <h1 class="text-center my-4">Основные данные</h1>
+
+    <!-- ОСНОВНАЯ ФОРМА — только карточки -->
+    <form method="post">
+        {% for row in main_data %}
+        <div class="card mb-3 shadow-sm">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span class="fw-bold">Настройка #{{ row.main_data_id }}</span>
+
+                <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox"
+                           name="is_link{{ row.main_data_id }}"
+                           id="is_link_{{ row.main_data_id }}"
+                           {% if row.is_link %}checked{% endif %}>
+                    <label class="form-check-label" for="is_link_{{ row.main_data_id }}">
+                        Это ссылка
+                    </label>
+                </div>
+            </div>
+
+            <div class="card-body">
+                <div class="mb-3">
+                    <label for="name_{{ row.main_data_id }}" class="form-label">Название</label>
+                    <input type="text" class="form-control"
+                           name="data_name{{ row.main_data_id }}"
+                           id="name_{{ row.main_data_id }}"
+                           value="{{ row.data_name }}"
+                           placeholder="Например: current_season_name">
+                </div>
+
+                <div class="mb-3">
+                    <label for="value_{{ row.main_data_id }}" class="form-label">Значение</label>
+                    <input type="text" class="form-control"
+                           name="data_value{{ row.main_data_id }}"
+                           id="value_{{ row.main_data_id }}"
+                           value="{{ row.data_value or '' }}"
+                           placeholder="Текст, который увидят пользователи">
+                </div>
+
+                <div class="mb-3">
+                    <label for="link_{{ row.main_data_id }}" class="form-label">Ссылка</label>
+                    <input type="text" class="form-control"
+                           name="data_link{{ row.main_data_id }}"
+                           id="link_{{ row.main_data_id }}"
+                           value="{{ row.data_link or '' }}"
+                           placeholder="https://...">
+                    <div class="form-text">Заполняется только если «Это ссылка» включено.</div>
+                </div>
+
+                <!-- Кнопка открывает модал с уникальным ID -->
+                <button type="button" class="btn btn-danger"
+                        data-bs-toggle="modal"
+                        data-bs-target="#deleteModal{{ row.main_data_id }}">
+                    Удалить
+                </button>
+            </div>
+        </div>
+        {% endfor %}
+
+        <div class="text-center mb-5">
+            <button type="submit" class="btn btn-success px-4">Сохранить</button>
+            <a href="{{ url_for('add_main_data') }}" class="btn btn-success">Добавить</a>
+        </div>
+    </form>
+
+    <!-- МОДАЛЫ — ВНЕ основной формы, но внутри цикла -->
+    {% for row in main_data %}
+    <div class="modal fade text-dark" id="deleteModal{{ row.main_data_id }}" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Удалить настройку «{{ row.data_name }}»?</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    Действие нельзя отменить.
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                    <form method="post" action="{{ url_for('delete_main_data', main_data_id=row.main_data_id) }}">
+                        <button type="submit" class="btn btn-danger">Удалить</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
 </div>
 {% endblock %}

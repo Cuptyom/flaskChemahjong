@@ -15,34 +15,22 @@
 
   <div class="sc-card">
     <div class="sc-card-title">Основная информация</div>
+	{% for row in main_data %}
+		{% if row.is_link %}
+		<div class="sc-row">
+	      <span class="sc-label">{{ row.data_name }}</span>
+	        <a class="sc-btn" target="_blank" href="{{ row.data_link }}">
+	          {{ row.data_value | default('нет данных', true) }}
+	        </a>
+	    </div>
 
-    <div class="sc-row">
-      <span class="sc-label">Дата основания</span>
-      <span class="sc-value">04.09.2024</span>
-    </div>
-
-    <div class="sc-row">
-      <span class="sc-label">Текущий сезон</span>
-      {% if main_data.current_season_link %}
-        <a class="sc-btn" target="_blank" href="{{ main_data.current_season_link }}">
-          {{ main_data.current_season_name | default('нет данных', true) }}
-        </a>
-      {% else %}
-        <span class="sc-btn disabled">нет данных</span>
-      {% endif %}
-    </div>
-
-    <div class="sc-row">
-      <span class="sc-label">Официальная группа Telegram</span>
-      {% if main_data.current_tg_link %}
-        <a class="sc-btn" target="_blank" href="{{ main_data.current_tg_link }}">
-          {{ main_data.current_tg_name | default('нет данных', true) }}
-        </a>
-      {% else %}
-        <span class="sc-btn disabled">нет данных</span>
-      {% endif %}
-    </div>
-  </div>
+		{% else %}
+	    <div class="sc-row">
+	      <span class="sc-label">{{ row.data_name }}</span>
+	      <span class="sc-value">{{ row.data_value }}</span>
+	    </div>
+	   	{% endif %}
+	{% endfor %}
 
 </div>
 {% endblock %}

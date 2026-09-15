@@ -41,13 +41,13 @@ class ArticleImage(db.Model):
 
 class MainData(db.Model):
     main_data_id = db.Column(db.Integer, primary_key=True)
-    current_season_name = db.Column(db.String(100), nullable=False)
-    current_season_link = db.Column(db.String(100), nullable=False)
-    current_tg_name = db.Column(db.String(100), nullable=False)
-    current_tg_link = db.Column(db.String(100), nullable=False)
+    data_name = db.Column(db.String(100), nullable=False)
+    data_value = db.Column(db.String(100), nullable=False)
+    is_link = db.Column(db.Boolean, nullable=False, default=False)
+    data_link = db.Column(db.String(100), nullable=True)
 
     def __repr__(self):
-        return '<Article %r>' % self.main_data_id
+        return '<Article %r>' % self.main_data_id   # ❌
 # --------- вспомогательные функции -------
 @app.context_processor
 def inject_auth():
@@ -94,28 +94,57 @@ def login_required(f):
 @app.route('/main-data-management', methods=['GET', 'POST'])
 @login_required
 def main_data_management():
-    main_data = MainData.query.first()
+    main_data = MainData.query.all()
+    if not main_data:
+            new_main_data = MainData(data_name='default', data_value='default', is_link=False, data_link="default")
+            db.session.add(new_main_data)
+            db.session.commit()
     if request.method == 'POST':
-        if main_data is None:
-            main_data = MainData()
-            db.session.add(main_data)
-        main_data.current_season_name = request.form['current_season_name']
-        main_data.current_season_link = request.form['current_season_link']
-        main_data.current_tg_name = request.form['current_tg_name']
-        main_data.current_tg_link = request.form['current_tg_link']
+        for row in main_data:
+            row.data_name = request.form.get(f'data_name{row.main_data_id}')
+            row.data_value = request.form.get(f'data_value{row.main_data_id}')
+            row.is_link = f'is_link{row.main_data_id}' in request.form
+            row.data_link = request.form.get(f'data_link{row.main_data_id}')
 
         db.session.commit()
         return redirect('/')
     else:
-        main_data = MainData.query.first()
+        main_data = MainData.query.all()
         return render_template('main_data_management.html', main_data=main_data)
+
+
+#добавление новой информации
+@app.route('/add-main-data', methods=['GET', 'POST'])
+@login_required
+def add_main_data():
+    if request.method == 'POST':
+        new_data_name = request.form.get(f'data_name_new')
+        new_data_value = request.form.get(f'data_value_new')
+        new_is_link = f'is_link_new' in request.form
+        new_data_link = request.form.get(f'data_link_new')
+
+        new_main_data = MainData(data_name=new_data_name, data_value=new_data_value, is_link=new_is_link, data_link=new_data_link)
+        db.session.add(new_main_data)
+        db.session.commit()
+        return redirect('/main-data-management')
+    else:
+        return render_template('add_main_data.html')
+
+
+@app.route('/delete-main-data/<int:main_data_id>', methods=['POST'])
+@login_required
+def delete_main_data(main_data_id):
+    main_data = MainData.query.get_or_404(main_data_id)
+    db.session.delete(main_data)
+    db.session.commit()
+    return redirect('/main-data-management')
 
 
 #главная страница
 @app.route('/')
 @app.route('/home')
 def index():
-    main_data = MainData.query.first()
+    main_data = MainData.query.all()
     return render_template('index.html', main_data=main_data)
 
 
