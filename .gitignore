@@ -1,3 +1,4 @@
 database.db
 static/uploads/*
+!.gitkeep
 admin.py
