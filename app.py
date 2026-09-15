@@ -7,6 +7,8 @@ from werkzeug.utils import secure_filename
 from functools import wraps
 from admin import Admin
 
+
+#Основная настройка
 basedir = os.path.abspath(os.path.dirname(__file__))
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'database.db')
@@ -48,13 +50,18 @@ class MainData(db.Model):
     data_link = db.Column(db.String(100), nullable=True)
 
     def __repr__(self):
-        return '<Article %r>' % self.main_data_id   # ❌
+        return '<MainData %r>' % self.main_data_id   #
+
+
 # --------- вспомогательные функции -------
+
+#общий массив переменных
 @app.context_processor
 def inject_auth():
     return dict(auth=is_auth())
 
 
+#проверка на сессии
 def is_auth():
     try:
         if session['auth'] == True:
@@ -69,6 +76,8 @@ def is_auth_else_return_main():
     else:
         return redirect('/')
 
+
+#сохранение картинок
 def save_image(file):
 	original = secure_filename(file.filename)
 	ext = original.rsplit('.', 1)[1].lower()
@@ -80,7 +89,7 @@ def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-
+#Проверка на право входа
 def login_required(f):
     @wraps(f)
     def wrapper(*args, **kwargs):
@@ -91,6 +100,9 @@ def login_required(f):
 
 
 #------обработка страниц -------
+
+#-----Гл. страница------
+
 #изменение главной страницы
 @app.route('/main-data-management', methods=['GET', 'POST'])
 @login_required
@@ -131,7 +143,7 @@ def add_main_data():
     else:
         return render_template('add_main_data.html')
 
-
+#удаление основной информации
 @app.route('/delete-main-data/<int:main_data_id>', methods=['POST'])
 @login_required
 def delete_main_data(main_data_id):
@@ -148,6 +160,7 @@ def index():
     main_data = MainData.query.all()
     return render_template('index.html', main_data=main_data)
 
+#------ Посты -----
 
 #создание постов
 @app.route('/create-article', methods=['POST', 'GET'])
@@ -278,6 +291,9 @@ def post_detail(article_id):
 	return render_template('post_detail.html', article=article)
 
 
+#-------- Админка ---------
+
+
 #админ вход
 @app.route(f'/{Admin.admin_pannel_url}', methods=['POST', 'GET'])
 def admin():
@@ -299,6 +315,7 @@ def test_session():
 	else:
 		return render_template('404.html'), 404
 
+#-------- Ошибки --------
 
 #ошибка 404
 @app.errorhandler(404)
