@@ -1,1 +1,3 @@
 database.db
+static/uploads/*
+admin.py

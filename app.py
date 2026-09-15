@@ -5,6 +5,7 @@ import os
 import uuid
 from werkzeug.utils import secure_filename
 from functools import wraps
+from admin import Admin
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 app = Flask(__name__)
@@ -281,7 +282,7 @@ def post_detail(article_id):
 @app.route('/admin', methods=['POST', 'GET'])
 def admin():
     if request.method == 'POST':
-        if request.form['login'] == 'Cuptyom' and request.form['password'] == '123':
+        if request.form['login'] == Admin.login and request.form['password'] == Admin.password:
             session['auth'] = True
             return redirect('/success_auth')
         else:
