@@ -1,18 +1,18 @@
 {% extends 'base.html' %}
 
-{% block title %}Изменить пост от {{ article.article_date.date() }}{% endblock %}
+{% block title %}Изменить пост от {{ post.post_date.date() }}{% endblock %}
 
 {% block body %}
 <div class="container fs-3">
     <!-- Основная форма редактирования -->
     <form method="post" enctype="multipart/form-data">
         <div class="alert alert-secondary">
-            <label for="article_title" class="form-label">Заголовок</label>
-            <input type="text" name="article_title" id="article_title"
-                   class="form-control" value="{{ article.article_title }}"><br>
+            <label for="post_title" class="form-label">Заголовок</label>
+            <input type="text" name="post_title" id="post_title"
+                   class="form-control" value="{{ post.post_title }}"><br>
 
             <label class="form-label">Главное фото</label><br>
-            {% set primary = article.images | selectattr('img_type', 'equalto', 'primary') | first %}
+            {% set primary = post.images | selectattr('img_type', 'equalto', 'primary') | first %}
             {% if primary %}
                 <img src="{{ url_for('static', filename='uploads/' + primary.img_name) }}"
                      class="img-fluid rounded mb-2" style="max-height: 300px;"><br>
@@ -21,17 +21,17 @@
             <input type="file" name="main_image" id="main_image"
                    class="form-control" accept="image/*"><br>
 
-            <p><b>Дата: {{ article.article_date.date() }} (неизменяема)</b></p>
+            <p><b>Дата: {{ post.post_date.date() }} (неизменяема)</b></p>
 
-            <label for="article_text" class="form-label">Текст</label>
-            <textarea name="article_text" id="article_text"
-                      class="form-control" rows="8">{{ article.article_text }}</textarea>
+            <label for="post_text" class="form-label">Текст</label>
+            <textarea name="post_text" id="post_text"
+                      class="form-control" rows="8">{{ post.post_text }}</textarea>
         </div>
 
-        {% if article.images %}
+        {% if post.images %}
         <h3>Все фото</h3>
         <div class="row">
-            {% for img in article.images %}
+            {% for img in post.images %}
             <div class="col-md-4 mb-3 post-card">
                 <img src="{{ url_for('static', filename='uploads/' + img.img_name) }}"
                  class="card-img-top" style="height: 200px; object-fit: cover;">
@@ -57,7 +57,7 @@
                class="form-control" multiple accept="image/*"><br>
 
         <button type="submit" class="btn btn-success">Сохранить</button>
-        <a href="{{ url_for('post_detail', article_id=article.article_id) }}" class="btn btn-secondary">Отмена</a>
+        <a href="{{ url_for('post_detail', post_id=post.post_id) }}" class="btn btn-secondary">Отмена</a>
         <button type="button" class="btn btn-danger"
                 data-bs-toggle="modal" data-bs-target="#deleteModal">Удалить</button>
     </form>
@@ -75,7 +75,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
-                    <form method="post" action="{{ url_for('delete_article', article_id=article.article_id) }}" class="d-inline">
+                    <form method="post" action="{{ url_for('delete_post', post_id=post.post_id) }}" class="d-inline">
                         <button type="submit" class="btn btn-danger">Удалить</button>
                     </form>
                 </div>

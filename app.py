@@ -20,28 +20,31 @@ app.config['MAX_CONTENT_LENGTH'] = 5 * 1024 * 1024   # 5 МБ на запрос
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'webp'}
 
 #------- Таблицы БД -------
-class Article(db.Model):
-    article_id = db.Column(db.Integer, primary_key=True)
-    article_title = db.Column(db.String(100), nullable=False)
-    article_text = db.Column(db.Text, nullable=False)
-    article_date = db.Column(db.DateTime, default=datetime.utcnow)
+
+#посты
+class Posts(db.Model):
+    post_id = db.Column(db.Integer, primary_key=True)
+    post_title = db.Column(db.String(100), nullable=False)
+    post_text = db.Column(db.Text, nullable=False)
+    post_date = db.Column(db.DateTime, default=datetime.utcnow)
 
     # связь с картинками (не колонка в БД, а "виртуальное" поле)
-    images = db.relationship('ArticleImage', backref='article', cascade='all, delete-orphan')
+    images = db.relationship('PostImage', backref='post', cascade='all, delete-orphan')
 
     def __repr__(self):
-        return '<Article %r>' % self.article_id
+        return '<Posts %r>' % self.post_id
 
+#Картинки Постов
+class PostImage(db.Model):
+    img_id = db.Column(db.Integer, primary_key=True)
+    post_id = db.Column(db.Integer, db.ForeignKey('posts.post_id'), nullable=False)
+    img_name = db.Column(db.String(255), nullable=False)
+    img_type = db.Column(db.String(10), nullable=False, default='foreign')
 
-class ArticleImage(db.Model):
-	img_id = db.Column(db.Integer, primary_key=True)
-	article_id = db.Column(db.Integer, db.ForeignKey('article.article_id'), nullable=False)
-	img_name = db.Column(db.String(255), nullable=False)
-	img_type = db.Column(db.String(10), nullable=False, default='foreign')
+    def __repr__(self):
+        return '<PostImage %r>' % self.img_id
 
-	def __repr__(self):
-		return '<ArticleImage %r>' % self.img_id
-
+#Основные данные
 class MainData(db.Model):
     main_data_id = db.Column(db.Integer, primary_key=True)
     data_name = db.Column(db.String(100), nullable=False)
@@ -50,7 +53,7 @@ class MainData(db.Model):
     data_link = db.Column(db.String(100), nullable=True)
 
     def __repr__(self):
-        return '<MainData %r>' % self.main_data_id   #
+        return '<MainData %r>' % self.main_data_id
 
 
 # --------- вспомогательные функции -------
@@ -79,15 +82,16 @@ def is_auth_else_return_main():
 
 #сохранение картинок
 def save_image(file):
-	original = secure_filename(file.filename)
-	ext = original.rsplit('.', 1)[1].lower()
-	unique_name = f"{uuid.uuid4().hex}.{ext}"
-	path = os.path.join(app.config['UPLOAD_FOLDER'], unique_name)
-	file.save(path)
-	return unique_name
+    original = secure_filename(file.filename)
+    ext = original.rsplit('.', 1)[1].lower()
+    unique_name = f"{uuid.uuid4().hex}.{ext}"
+    path = os.path.join(app.config['UPLOAD_FOLDER'], unique_name)
+    file.save(path)
+    return unique_name
 def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
 
 #Проверка на право входа
 def login_required(f):
@@ -101,7 +105,15 @@ def login_required(f):
 
 #------обработка страниц -------
 
-#-----Гл. страница------
+#-----О нас------
+
+
+#о нас
+@app.route('/about')
+def index():
+    main_data = MainData.query.all()
+    return render_template('index.html', main_data=main_data)
+
 
 #изменение главной страницы
 @app.route('/main-data-management', methods=['GET', 'POST'])
@@ -120,7 +132,7 @@ def main_data_management():
             row.data_link = request.form.get(f'data_link{row.main_data_id}')
 
         db.session.commit()
-        return redirect('/')
+        return redirect('/about')
     else:
         main_data = MainData.query.all()
         return render_template('main_data_management.html', main_data=main_data)
@@ -152,34 +164,44 @@ def delete_main_data(main_data_id):
     db.session.commit()
     return redirect('/main-data-management')
 
+#------ Посты/главная страница -----
 
-#главная страница
+
+#посты
 @app.route('/')
-@app.route('/home')
-def index():
-    main_data = MainData.query.all()
-    return render_template('index.html', main_data=main_data)
+@app.route('/posts')
+@app.route('/posts/<int:page>')
+def posts(page = 1):
+    per_page = 8
+    pagination = Posts.query.order_by(Posts.post_date.desc()).paginate(page=page, per_page=per_page, error_out = False)
+    return render_template('posts.html', posts=pagination.items, pagination=pagination)
 
-#------ Посты -----
+
+#просмотр постов
+@app.route('/posts/detail/<int:post_id>')
+def post_detail(post_id):
+    post = Posts.query.get(post_id)
+    return render_template('post_detail.html', post=post)
+
 
 #создание постов
-@app.route('/create-article', methods=['POST', 'GET'])
+@app.route('/create-post', methods=['POST', 'GET'])
 @login_required
-def create_article():
+def create_post():
     if request.method == 'POST':
-        article_title = request.form['article_title']
-        article_text = request.form['article_text']
+        post_title = request.form['post_title']
+        post_text = request.form['post_text']
 
-        article = Article(article_title=article_title, article_text=article_text)
-        db.session.add(article)
-        db.session.flush()   # ← получаем article_id
+        post = Posts(post_title=post_title, post_text=post_text)
+        db.session.add(post)
+        db.session.flush()   # ← получаем post_id
 
         # --- главная картинка ---
         main_file = request.files.get('main_image')
         if main_file and main_file.filename != '' and allowed_file(main_file.filename):
             unique_name = save_image(main_file)
-            db.session.add(ArticleImage(
-                article_id=article.article_id,
+            db.session.add(PostImage(
+                post_id=post.post_id,
                 img_name=unique_name,
                 img_type='primary',
             ))
@@ -188,8 +210,8 @@ def create_article():
         for file in request.files.getlist('secondary_images'):
             if file and file.filename != '' and allowed_file(file.filename):
                 unique_name = save_image(file)
-                db.session.add(ArticleImage(
-                    article_id=article.article_id,
+                db.session.add(PostImage(
+                    post_id=post.post_id,
                     img_name=unique_name,
                     img_type='foreign',
                 ))
@@ -197,25 +219,25 @@ def create_article():
         db.session.commit()
         return redirect('/posts')
     else:
-        return render_template('create_article.html')
+        return render_template('create_post.html')
 
 
 #редактирование постов
-@app.route('/edit-article/<int:article_id>', methods=['POST', 'GET'])
+@app.route('/edit-post/<int:post_id>', methods=['POST', 'GET'])
 @login_required
-def edit_article(article_id):
-    article = Article.query.get_or_404(article_id)
+def edit_post(post_id):
+    post = Posts.query.get_or_404(post_id)
 
     if request.method == 'POST':
         # 1. текст
-        article.article_title = request.form['article_title']
-        article.article_text = request.form['article_text']
+        post.post_title = request.form['post_title']
+        post.post_text = request.form['post_text']
 
         # 2. замена главной
         main_file = request.files.get('main_image')
         if main_file and main_file.filename != '' and allowed_file(main_file.filename):
-            old_primary = ArticleImage.query.filter_by(
-                article_id=article_id, img_type='primary'
+            old_primary = PostImage.query.filter_by(
+                post_id=post_id, img_type='primary'
             ).first()
             if old_primary:
                 old_path = os.path.join(app.config['UPLOAD_FOLDER'], old_primary.img_name)
@@ -224,71 +246,54 @@ def edit_article(article_id):
                 db.session.delete(old_primary)
 
             unique_name = save_image(main_file)
-            db.session.add(ArticleImage(
-                article_id=article_id,
+            db.session.add(PostImage(
+                post_id=post_id,
                 img_name=unique_name,
                 img_type='primary',
             ))
 
         # 3. удаление отмеченных
         for img_id in request.form.getlist('delete_images'):
-            img = ArticleImage.query.get(int(img_id))
-            if img and img.article_id == article_id:
+            img = PostImage.query.get(int(img_id))
+            if img and img.post_id == post_id:
                 path = os.path.join(app.config['UPLOAD_FOLDER'], img.img_name)
                 if os.path.exists(path):
                     os.remove(path)
                 db.session.delete(img)
 
-        # 4. добавление новых  ← ЭТОГО У ТЕБЯ НЕТ
+        # 4. добавление новых
         for file in request.files.getlist('secondary_images'):
             if file and file.filename != '' and allowed_file(file.filename):
                 unique_name = save_image(file)
-                db.session.add(ArticleImage(
-                    article_id=article_id,
+                db.session.add(PostImage(
+                    post_id=post_id,
                     img_name=unique_name,
                     img_type='foreign',
                 ))
 
         db.session.commit()
-        return redirect(url_for('post_detail', article_id=article_id))
+        return redirect(url_for('post_detail', post_id=post_id))
 
-    return render_template('edit_article.html', article=article)
+    return render_template('edit_post.html', post=post)
 
 #удаление поста
-@app.route('/delete-article/<int:article_id>', methods=['POST'])
+@app.route('/delete-post/<int:post_id>', methods=['POST'])
 @login_required
-def delete_article(article_id):
-    article = Article.query.get_or_404(article_id)
+def delete_post(post_id):
+    post = Posts.query.get_or_404(post_id)
 
     # удаляем файлы с диска
-    for img in article.images:
+    for img in post.images:
         path = os.path.join(app.config['UPLOAD_FOLDER'], img.img_name)
         if os.path.exists(path):
             os.remove(path)
 
-    # удаляем статью (картинки в БД — каскадом)
-    db.session.delete(article)
+    # удаляем пост (картинки в БД — каскадом)
+    db.session.delete(post)
     db.session.commit()
 
     flash('Пост удалён', 'success')
     return redirect(url_for('posts'))
-
-
-#посты
-@app.route('/posts')
-@app.route('/posts/<int:page>')
-def posts(page = 1):
-	per_page = 8
-	pagination = Article.query.order_by(Article.article_date.desc()).paginate(page=page, per_page=per_page, error_out = False)
-	articles = pagination.items
-	return render_template('posts.html', articles=articles, pagination=pagination)
-
-
-#просмотр постов
-@app.route('/posts/detail/<int:article_id>')
-def post_detail(article_id):
-	article = Article.query.get(article_id)
-	return render_template('post_detail.html', article=article)
 
 
 #-------- Админка ---------
@@ -310,10 +315,10 @@ def admin():
 # успешный вход в паннель
 @app.route('/success_auth')
 def test_session():
-	if is_auth():
-		return render_template('success_auth.html')
-	else:
-		return render_template('404.html'), 404
+    if is_auth():
+        return render_template('success_auth.html')
+    else:
+        return render_template('404.html'), 404
 
 #-------- Ошибки --------
 

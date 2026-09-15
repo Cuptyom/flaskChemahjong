@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block title %}
-Пост от {{ article.article_date.date() }}
+Пост от {{ post.post_date.date() }}
 {% endblock %}
 
 {% block body %}
@@ -9,15 +9,15 @@
   <a href="{{ url_for('posts') }}" class="btn btn-outline-light">К постам</a>
 
   <div class="alert text-white">
-    <h2>{{ article.article_title }}</h2>
-    <p><b>Дата: {{ article.article_date.date() }}</b></p>
-    <p>{{ article.article_text }}</p>
+    <h2>{{ post.post_title }}</h2>
+    <p><b>Дата: {{ post.post_date.date() }}</b></p>
+    <p>{{ post.post_text }}</p>
   </div>
 
-  {% if article.images %}
+  {% if post.images %}
     <h3 class="text-white">Фото</h3>
     <div class="row">
-      {% for img in article.images %}
+      {% for img in post.images %}
         <div class="col-md-4 mb-3">
           <img
             src="{{ url_for('static', filename='uploads/' + img.img_name) }}"
@@ -33,7 +33,7 @@
   {% endif %}
 
   {% if auth %}
-    <a href="/edit-article/{{ article.article_id }}" class="btn btn-outline-light">Изменить</a>
+    <a href="/edit-post/{{ post.post_id }}" class="btn btn-outline-light">Изменить</a>
   {% endif %}
 </div>
 
