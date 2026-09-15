@@ -4,6 +4,7 @@
 
 {% block body %}
 <div class="container fs-3">
+    <!-- Основная форма редактирования -->
     <form method="post" enctype="multipart/form-data">
         <div class="alert alert-secondary">
             <label for="article_title" class="form-label">Заголовок</label>
@@ -44,7 +45,7 @@
                     </label>
                 </div>
                 {% else %}
-                    <small class="text-white">Главная (заменяется через загрузку выше)</small>
+                    <small class="text-muted">Главная (заменяется через загрузку выше)</small>
                 {% endif %}
             </div>
             {% endfor %}
@@ -56,8 +57,30 @@
                class="form-control" multiple accept="image/*"><br>
 
         <button type="submit" class="btn btn-success">Сохранить</button>
-        <a href="{{ url_for('post_detail', article_id=article.article_id) }}"
-           class="btn btn-secondary">Отмена</a>
+        <a href="{{ url_for('post_detail', article_id=article.article_id) }}" class="btn btn-secondary">Отмена</a>
+        <button type="button" class="btn btn-danger"
+                data-bs-toggle="modal" data-bs-target="#deleteModal">Удалить</button>
     </form>
+
+    <!-- Модал ВНЕ формы -->
+    <div class="modal fade text-dark" id="deleteModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Подтверждение удаления</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+                </div>
+                <div class="modal-body">
+                    Вы уверены, что хотите удалить этот пост? Действие нельзя отменить.
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                    <form method="post" action="{{ url_for('delete_article', article_id=article.article_id) }}" class="d-inline">
+                        <button type="submit" class="btn btn-danger">Удалить</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 {% endblock %}

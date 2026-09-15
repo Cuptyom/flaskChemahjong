@@ -1,3 +1,15 @@
-body {
-    font-family: 'Inter'; /* Здесь 'Inter' — имя шрифта из ссылки */
+.nav-link-custom {
+    color: #fff;
+    text-decoration: none;
+    padding-bottom: 4px;
+    border-bottom: 2px solid transparent;
+    transition: border-color 0.2s ease;
+}
+
+.nav-link-custom:hover {
+    border-bottom-color: #ffc107;   /* жёлтый — цвет Bootstrap warning */
+}
+
+.nav-link-custom.active {
+    border-bottom-color: #ffc107;   /* текущая страница тоже подсвечена */
 }

@@ -10,7 +10,7 @@
 	<div class="alert alert-secondary">Постов пока что нет!</div>
 	{% else %}
 		{% for el in articles %}
-		<div class="alert alert-secondary rounded-0">
+		<div class="alert alert-secondary rounded-3">
 			<h2>{{ el.article_title }}</h2>
 			<p><b>Дата:{{ el.article_date.date() }}</b></p>
 			{% set primary = el.images | selectattr('img_type', 'equalto', 'primary') | first %}

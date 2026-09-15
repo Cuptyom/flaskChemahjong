@@ -1,4 +1,4 @@
-from flask import Flask, render_template, url_for, request, redirect, session
+from flask import Flask, render_template, url_for, request, redirect, session, flash
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 import os
@@ -210,6 +210,26 @@ def edit_article(article_id):
         return redirect(url_for('post_detail', article_id=article_id))
 
     return render_template('edit_article.html', article=article)
+
+#удаление поста
+@app.route('/delete-article/<int:article_id>', methods=['POST'])
+@login_required
+def delete_article(article_id):
+    article = Article.query.get_or_404(article_id)
+
+    # удаляем файлы с диска
+    for img in article.images:
+        path = os.path.join(app.config['UPLOAD_FOLDER'], img.img_name)
+        if os.path.exists(path):
+            os.remove(path)
+
+    # удаляем статью (картинки в БД — каскадом)
+    db.session.delete(article)
+    db.session.commit()
+
+    flash('Пост удалён', 'success')
+    return redirect(url_for('posts'))
+
 
 #посты
 @app.route('/posts')

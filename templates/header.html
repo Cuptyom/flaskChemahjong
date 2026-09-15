@@ -1,25 +1,24 @@
 <div class="sticky-top bg-dark border-bottom border-secondary">
-    <div class="container">
-        <div class="d-flex align-items-center justify-content-between py-3 flex-wrap gap-3">
-            <!-- Бренд: лого + название -->
+    <div class="container-fluid">
+        <div class="d-flex align-items-center justify-content-between py-2 flex-wrap gap-3">
+            <!-- Брендон: лого + название -->
             <div class="d-flex align-items-center gap-2">
                 <img src="{{ url_for('static', filename='img/logo.jpg') }}"
-                     class="rounded" style="height: 60px;" alt="Логотип">
-                <span class="fw-bold fs-4 text-white">Череповецкий клуб риичи маджонга</span>
+                     class="rounded" style="height: 40px;" alt="Логотип">
+                <span class="fw-bold fs-5 text-white">Череповецкий клуб риичи маджонга</span>
             </div>
 
             <!-- Меню -->
-            <div class="d-flex align-items-center gap-2 flex-wrap">
-                <a class="btn btn-outline-light" href="/">Главная</a>
-                <a class="btn btn-outline-light" href="/posts">Посты</a>
+            <div class="d-flex align-items-center gap-3 flex-wrap">
+			    <a class="nav-link-custom" href="/">Главная</a>
+			    <a class="nav-link-custom" href="/posts">Посты</a>
 
-                {% if auth %}
-                    <div class="vr text-white mx-2"></div>
-
-                    <a class="btn btn-outline-light" href="/main-data-management">Настройки</a>
-                    <a class="btn btn-outline-light" href="/create-article">Создать пост</a>
-                {% endif %}
-            </div>
+			    {% if auth %}
+			        <div class="vr text-white mx-2"></div>
+			        <a class="nav-link-custom" href="/main-data-management">Настройки</a>
+			        <a class="nav-link-custom" href="/create-article">Создать пост</a>
+			    {% endif %}
+			</div>
         </div>
     </div>
 </div>
