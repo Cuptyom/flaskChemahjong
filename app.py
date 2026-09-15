@@ -24,7 +24,7 @@ app.config['MAX_CONTENT_LENGTH'] = 5 * 1024 * 1024   # 5 МБ на запрос
 
 app.config.update(
     SESSION_COOKIE_HTTPONLY=True,
-    SESSION_COOKIE_SECURE=Admin.IS_PRODUCTION,
+    SESSION_COOKIE_SECURE=True,
     SESSION_COOKIE_SAMESITE='Lax',
 )
 
@@ -119,7 +119,7 @@ def login_required(f):
     @wraps(f)
     def wrapper(*args, **kwargs):
         if session.get('auth') is not True:
-            return redirect(url_for('admin'))
+            return redirect('/')
         return f(*args, **kwargs)
     return wrapper
 
@@ -421,7 +421,9 @@ def internal_error(error):
     db.session.rollback()
     return render_template('404.html'), 500
 
+
+with app.app_context():
+    db.create_all()
+
 if __name__ == '__main__':
-    with app.app_context():
-        db.create_all()
     app.run(debug=False)
