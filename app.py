@@ -10,7 +10,7 @@ from admin import Admin
 basedir = os.path.abspath(os.path.dirname(__file__))
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'database.db')
-app.config['SECRET_KEY'] = '[.cMPq|cZSneIgmOBT8kBQax-}D+Y6!%'
+app.config['SECRET_KEY'] = Admin.session_token
 db = SQLAlchemy(app)
 
 app.config['UPLOAD_FOLDER'] = os.path.join(app.static_folder, 'uploads')
