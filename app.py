@@ -1,4 +1,4 @@
-from flask import Flask, render_template, url_for, request, redirect, session, flash
+from flask import Flask, render_template, url_for, request, redirect, session, flash, Response, send_from_directory
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 from werkzeug.utils import secure_filename
@@ -402,6 +402,31 @@ def logout():
     session.clear()
     return redirect('/')
 
+# ----------- поиск  сайта ----------
+
+@app.route('/sitemap.xml')
+def sitemap():
+    pages = []
+    # Главная и «О нас»
+    pages.append(url_for('posts', _external=True))
+    pages.append(url_for('about', _external=True))
+
+    # Все посты
+    for post in Posts.query.all():
+        pages.append(url_for('post_detail', post_id=post.post_id, _external=True))
+
+    # Формируем XML
+    xml = '<?xml version="1.0" encoding="UTF-8"?>\n'
+    xml += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+    for page in pages:
+        xml += f'  <url><loc>{page}</loc></url>\n'
+    xml += '</urlset>'
+
+    return Response(xml, mimetype='application/xml')
+
+@app.route('/robots.txt')
+def robots():
+    return send_from_directory(app.static_folder, 'robots.txt')
 
 # ---------- Ошибки ----------
 
