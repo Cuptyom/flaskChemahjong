@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block title %}
+ЧеМаджонг — главная
+{% endblock %}
+
+{% block body %}
+
+<div class="container" style="max-width: 720px;">
+
+  <div class="sc-header">
+    <h1>ЧеМаджонг</h1>
+    <p>Череповецкий клуб риичи маджонга</p>
+  </div>
+
+  <div class="sc-card">
+    <div class="sc-card-title">Основная информация</div>
+	{% for row in main_data %}
+		{% if row.is_link %}
+		<div class="sc-row">
+	      <span class="sc-label">{{ row.data_name }}</span>
+	        <a class="sc-btn" target="_blank" href="{{ row.data_link }}">
+	          {{ row.data_value | default('нет данных', true) }}
+	        </a>
+	    </div>
+
+		{% else %}
+	    <div class="sc-row">
+	      <span class="sc-label">{{ row.data_name }}</span>
+	      <span class="sc-value">{{ row.data_value }}</span>
+	    </div>
+	   	{% endif %}
+	{% endfor %}
+
+</div>
+{% endblock %}

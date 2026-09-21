@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+
+{% block title %}Изменить пост от {{ post.post_date.date() }}{% endblock %}
+
+{% block body %}
+<div class="container">
+    <!-- Основная форма редактирования -->
+    <form method="post" enctype="multipart/form-data">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+        <div class="alert alert-secondary">
+            <label for="post_title" class="form-label">Заголовок</label>
+            <input type="text" name="post_title" id="post_title"
+                   class="form-control" value="{{ post.post_title }}"><br>
+
+            <label class="form-label">Главное фото</label><br>
+            {% set primary = post.images | selectattr('img_type', 'equalto', 'primary') | first %}
+            {% if primary %}
+                <img src="{{ url_for('static', filename='uploads/' + primary.img_name) }}"
+                     class="img-fluid rounded mb-2" style="max-height: 300px;"><br>
+                <small class="text-muted">Загрузите новое, чтобы заменить</small><br>
+            {% endif %}
+            <input type="file" name="main_image" id="main_image"
+                   class="form-control" accept="image/*"><br>
+
+            <p><b>Дата: {{ post.post_date.date() }} (неизменяема)</b></p>
+
+            <label for="post_text" class="form-label">Текст</label>
+            <textarea name="post_text" id="post_text"
+                      class="form-control" rows="8">{{ post.post_text }}</textarea>
+        </div>
+
+        {% if post.images %}
+        <h3>Все фото</h3>
+        <div class="row">
+            {% for img in post.images %}
+            <div class="col-md-4 mb-3 post-card">
+                <img src="{{ url_for('static', filename='uploads/' + img.img_name) }}"
+                 class="card-img-top" style="height: 200px; object-fit: cover;">
+                {% if img.img_type != 'primary' %}
+                <div class="form-check mt-2">
+                    <input class="form-check-input" type="checkbox"
+                           name="delete_images" value="{{ img.img_id }}"
+                           id="del_{{ img.img_id }}">
+                    <label class="form-check-label text-danger" for="del_{{ img.img_id }}">
+                        Удалить
+                    </label>
+                </div>
+                {% else %}
+                    <small class="text-white">Главная (заменяется через загрузку выше)</small>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <label for="secondary_images" class="form-label">Добавить фото</label>
+        <input type="file" name="secondary_images" id="secondary_images"
+               class="form-control" multiple accept="image/*"><br>
+
+        <button type="submit" class="btn btn-success">Сохранить</button>
+        <a href="{{ url_for('post_detail', post_id=post.post_id) }}" class="btn btn-secondary">Отмена</a>
+        <button type="button" class="btn btn-danger"
+                data-bs-toggle="modal" data-bs-target="#deleteModal">Удалить</button>
+    </form>
+
+    <!-- Модал ВНЕ формы -->
+    <div class="modal fade text-dark" id="deleteModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Подтверждение удаления</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+                </div>
+                <div class="modal-body">
+                    Вы уверены, что хотите удалить этот пост? Действие нельзя отменить.
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                    <form method="post" action="{{ url_for('delete_post', post_id=post.post_id) }}" class="d-inline">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <button type="submit" class="btn btn-danger">Удалить</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

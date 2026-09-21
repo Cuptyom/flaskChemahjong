@@ -1,12 +1,13 @@
 {% extends 'base.html' %}
 
-{% block title %}Изменить основные данные{% endblock %}
+{% block title %}Добавить основные данные{% endblock %}
 
 {% block body %}
 <div class="container" style="max-width: 720px;">
     <h1 class="text-center my-4">Основные данные</h1>
 
     <form method="post">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
         <div class="card mb-3 shadow-sm">
             <div class="card-header d-flex justify-content-between align-items-center">
                 <span class="fw-bold">Добавление</span>
