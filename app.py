@@ -209,10 +209,18 @@ def delete_main_data(main_data_id):
 @app.route('/posts/<int:page>')
 def posts(page=1):
     per_page = 8
-    pagination = Posts.query.order_by(Posts.post_date.desc()).paginate(
-        page=page, per_page=per_page, error_out=False
-    )
-    return render_template('posts.html', posts=pagination.items, pagination=pagination)
+    is_search = False
+    search = request.args.get('search', '').strip()
+
+    query = Posts.query
+
+    if search:
+        query = query.filter((Posts.post_title.ilike(f'%{search}%')))
+        is_search = True
+
+    pagination = query.order_by(Posts.post_date.desc()).paginate(page=page, per_page=per_page, error_out=False)
+
+    return render_template('posts.html', posts=pagination.items, pagination=pagination, search=search, is_search=is_search)
 
 
 @app.route('/posts/detail/<int:post_id>')

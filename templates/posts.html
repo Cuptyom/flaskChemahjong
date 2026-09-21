@@ -4,11 +4,22 @@
 
 {% block body %}
 <div class="container">
-    {% if not posts %}
+    <form class="container my-4" style="max-width: 500px;" method="GET">
+        <div class="input-group">
+            <input type="text" class="form-control" name="search"
+                   placeholder="Поиск по постам..." value="{{ search or '' }}"
+                   aria-label="Поиск">
+            <button type="submit" class="btn btn-outline-light">
+                <i class="bi bi-search"></i> Найти
+            </button>
+        </div>
+    </form>
+    {% if not posts and not is_search %}
         <div class="alert alert-secondary">Постов пока что нет!</div>
+    {% elif not posts and is_search %}
+        <div class="alert alert-secondary">Постов не найдено!</div>
     {% else %}
-        <div class="row row-cols-1 row-cols-md-4 g-4 justify-content-center mx-auto"
-             style="max-width: 1000px;">
+        <div class="row row-cols-1 row-cols-md-4 g-4 justify-content-center mx-auto" style="max-width: 1000px;">
             {% for el in posts %}
             <div>
                 <div class="card h-100 shadow-sm post-card">
