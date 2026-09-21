@@ -1,0 +1,13 @@
+User-agent: *
+Allow: /
+Disallow: /pa3Xk9Qz-mdf8-hj2
+Disallow: /create-post
+Disallow: /edit-post/
+Disallow: /delete-post/
+Disallow: /main-data-management
+Disallow: /add-main-data
+Disallow: /delete-main-data/
+Disallow: /success_auth
+Disallow: /logout
+
+Sitemap: https://chemahjong.ru/sitemap.xml
